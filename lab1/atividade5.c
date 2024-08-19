@@ -26,6 +26,11 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     numeroThreads = atoi(argv[1]);
     tamanhoVetor = atoi(argv[2]);
+    if(numeroThreads <= 0 || tamanhoVetor <= 0)
+    {
+        puts("O número de threads e o tamanho do vetor tem que ser ambos maiores que 0.");
+        return 5;
+    }
     quantidadePorThread = tamanhoVetor / numeroThreads;
     resto = tamanhoVetor % numeroThreads;
     quantoFalta = resto;
