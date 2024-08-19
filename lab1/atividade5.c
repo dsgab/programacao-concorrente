@@ -12,6 +12,7 @@ argumentosThread;
 void *incrementar(void *argumentos);
 void inicializarVetor(int *vetor, int tamanho);
 int verificarResultado(int *vetorOriginal, int *vetorAlterado, int tamanho);
+void printVetor(int *vetor, int tamanho);
 
 int main(int argc, char* argv[])
 {
@@ -59,6 +60,10 @@ int main(int argc, char* argv[])
         if(pthread_join(idThreadsSistema[i], NULL))
             printf("Erro em pthread_join() da thread %d\n", i);
     }
+    puts("Vetor original:");
+    printVetor(vetorOriginal, tamanhoVetor);
+    puts("Vetor alterado:");
+    printVetor(vetorAlterado, tamanhoVetor);
     if(verificarResultado(vetorOriginal, vetorAlterado, tamanhoVetor))
     {
         puts("Não foi obtido o resultado esperado.");
@@ -93,4 +98,10 @@ int verificarResultado(int *vetorOriginal, int *vetorAlterado, int tamanho)
         if(vetorOriginal[i] + 1 != vetorAlterado[i]) return 1;
     }
     return 0;
+}
+
+void printVetor(int *vetor, int tamanho)
+{
+    for(int i = 0; i < tamanho-1; i++) printf("%d, ", vetor[i]);
+    printf("%d\n", vetor[tamanho-1]);
 }
