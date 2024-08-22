@@ -8,9 +8,11 @@ int main(int argc, char* argv[])
 {
     int tamanho;
     float *vetor1, *vetor2;
-    if(argc < 2)
+    double produtoInterno = 0;
+    FILE *descritorArquivo;
+    if(argc < 3)
     {
-        printf("Faltou o tamanho do vetor: %s <TAMANHO>\n", argv[0]);
+        printf("Faltou argumentos: %s <TAMANHO> <NOME_DO_ARQUIVO>\n", argv[0]);
         return 1;
     }
     srand(time(NULL));
@@ -28,5 +30,36 @@ int main(int argc, char* argv[])
     printf("%f\n", vetor1[tamanho-1]);
     for(int i = 0; i < tamanho-1; i++) printf("%f, ", vetor2[i]);
     printf("%f\n", vetor2[tamanho-1]);
+    descritorArquivo = fopen(argv[2], "wb");
+    if(!descritorArquivo)
+    {
+        puts("Erro ao abrir o arquivo.");
+        return 2;
+    }
+    if(fwrite(&tamanho, sizeof(int), 1, descritorArquivo) < 1)
+    {
+        puts("Não foi possível escrever no arquivo o tamanho N.");
+        return 3;
+    }
+    if(fwrite(vetor1, sizeof(float), tamanho, descritorArquivo) < tamanho)
+    {
+        puts("Não foi possível escrever no arquivo o vetor 1.");
+        return 4;
+    }
+    if(fwrite(vetor2, sizeof(float), tamanho, descritorArquivo) < tamanho)
+    {
+        puts("Não foi possível escrever no arquivo o vetor 2.");
+        return 4;
+    }
+    for(int i = 0; i < tamanho; i++)
+    {
+        produtoInterno += vetor1[i] * vetor2[i];
+    }
+    if(fwrite(&produtoInterno, sizeof(double), 1, descritorArquivo) < 1)
+    {
+        puts("Não foi possível escrever no arquivo o resultado do produto interno.");
+        return 5;
+    }
+    printf("Produto interno: %lf\n", produtoInterno);
     return 0;
 }
