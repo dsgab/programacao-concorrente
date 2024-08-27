@@ -61,5 +61,6 @@ int main(int argc, char* argv[])
         return 5;
     }
     printf("Produto interno: %lf\n", produtoInterno);
+    fclose(descritorArquivo);
     return 0;
 }
