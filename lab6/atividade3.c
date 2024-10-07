@@ -7,6 +7,13 @@
 #define QTDE_OPS 100
 #define QTDE_INI 100
 #define MAX_VALUE 100
+#define DEBUG /* Descomentar o #define para printar o log de execução do programa. */
+
+#ifdef DEBUG
+#define DEBUG_PRINT(x) printf x
+#else
+#define DEBUG_PRINT(x) do {} while (0)
+#endif
 
 
 struct list_node_s* head = NULL;
@@ -17,6 +24,8 @@ pthread_cond_t condicaoEscrita, condicaoLeitura;
 void entraLeitura()
 {
     pthread_mutex_lock(&mutex);
+    /* Função para mostrar o que tá acontecendo na execução. Só é printada se a macro DEBUG não estiver comentada. */
+    DEBUG_PRINT(("Thread quer ler.\nLeitores: %d; Escritores: %d; Querem escrever: %d\n", leitores, escritores, querEscrever));
     while(escritores > 0 || querEscrever > 0)
     {
         pthread_cond_wait(&condicaoLeitura, &mutex);
@@ -28,6 +37,7 @@ void entraLeitura()
 void saiLeitura()
 {
     pthread_mutex_lock(&mutex);
+    DEBUG_PRINT(("Thread leu.\nLeitores: %d; Escritores: %d; Querem escrever: %d\n", leitores, escritores, querEscrever));
     leitores--;
     if(leitores == 0) pthread_cond_signal(&condicaoEscrita);
     pthread_mutex_unlock(&mutex);
@@ -36,7 +46,8 @@ void saiLeitura()
 void entraEscrita()
 {
     pthread_mutex_lock(&mutex);
-    if(escritores > 0 || leitores > 0) querEscrever++;
+    DEBUG_PRINT(("Thread quer escrever.\nLeitores: %d; Escritores: %d; Querem escrever: %d\n", leitores, escritores, querEscrever));
+    querEscrever++;
     while(escritores > 0 || leitores > 0)
     {
         pthread_cond_wait(&condicaoEscrita, &mutex);
@@ -48,6 +59,7 @@ void entraEscrita()
 void saiEscrita()
 {
     pthread_mutex_lock(&mutex);
+    DEBUG_PRINT(("Thread escreveu.\nLeitores: %d; Escritores: %d; Querem escrever: %d\n", leitores, escritores, querEscrever));
     escritores--;
     querEscrever--;
     pthread_cond_broadcast(&condicaoEscrita);
@@ -67,27 +79,21 @@ void* tarefa(void* arg)
         op = rand() % 100;
         if(op<98)
         {
-            printf("Quer ler %ld na thread %ld.\n", i, id);
 	        entraLeitura();
-            printf("Lendo %ld na thread %ld.\n", i, id);
             Member(i%MAX_VALUE, head);   /* Ignore return value */
 	        saiLeitura();
 	        read++;
         }
         if(op<99)
         {
-            printf("Quer escrever %ld na thread %ld.\n", i, id);
             entraEscrita();
-            printf("Escrevendo %ld na thread %ld.\n", i, id);
             Insert(i%MAX_VALUE, &head);  /* Ignore return value */
             saiEscrita();
 	        in++;
         }
         if(99<=op)
         {
-            printf("Quer escrever %ld na thread %ld.\n", i, id);
             entraEscrita();
-            printf("Escrevendo %ld na thread %ld.\n", i, id);
             Delete(i%MAX_VALUE, &head);  /* Ignore return value */
             saiEscrita();
 	        out++;
