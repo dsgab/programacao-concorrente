@@ -1,7 +1,15 @@
+.vscode
 /lab1/atividade
 /lab2/atividade1/
 /lab2/atividade2/
 /lab2/sequencial
 /lab2/binario
 /lab2/atividade3
-.vscode
+/lab3/cods-lab3/
+/lab6/atividade3
+/lab6/error-main.c
+/lab6/linked_list.c
+/lab6/list_int.c
+/lab6/main_lock.c
+/lab6/main_rwlock.c
+/lab6/timer.h
